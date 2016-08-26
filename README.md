@@ -1,0 +1,2 @@
+# DataBindingAdapter
+基于data binding的RecyclerView adapter封装
