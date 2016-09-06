@@ -2,6 +2,7 @@ package com.wang.baseadapter.model;
 
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -122,12 +123,12 @@ public class RecyclerViewItemArray extends ArrayList<ItemData> {
      */
     public int removeAllType(int type) {
         int count = 0;
-        for (int i = 0; i < size(); i++) {
-            ItemData item = get(i);
+        Iterator<ItemData> iterator = iterator();
+        while (iterator.hasNext()){
+            ItemData item = iterator.next();
             if (item.getDataType() == type) {
-                remove(item);
+                iterator.remove();
                 count++;
-                i--;
             }
         }
         return count;
