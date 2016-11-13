@@ -185,6 +185,21 @@ public class RecyclerViewItemArray extends ArrayList<ItemData> {
         return count;
     }
 
+
+    /**
+     * 在指定位置移除指定数量数据类型数据
+     *
+     * @param position 开始移除数据位置
+     * @param count    移除的数量
+     * @return 移除的数量
+     */
+    public int removeAllAtPosition(int position, int count) {
+        if (count > 0) {
+            removeRange(position, position + count);
+        }
+        return count;
+    }
+
     /**
      * 查询数组中是否存在type类型的项
      *

@@ -1,4 +1,4 @@
-package com.example.jiudeng009.databindingadapter;
+package com.example.jiudeng009.databindingadapter.model;
 
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;

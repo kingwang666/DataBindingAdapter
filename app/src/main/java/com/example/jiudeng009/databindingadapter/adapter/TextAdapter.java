@@ -1,14 +1,15 @@
-package com.example.jiudeng009.databindingadapter;
+package com.example.jiudeng009.databindingadapter.adapter;
 
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
 
+import com.example.jiudeng009.databindingadapter.R;
+import com.example.jiudeng009.databindingadapter.databinding.ItemText2Binding;
 import com.example.jiudeng009.databindingadapter.databinding.ItemTextBinding;
+import com.example.jiudeng009.databindingadapter.model.TextData;
 import com.wang.baseadapter.BaseRecyclerViewAdapter;
 import com.wang.baseadapter.BaseViewHolder;
-import com.wang.baseadapter.model.ItemData;
 import com.wang.baseadapter.model.RecyclerViewItemArray;
 
 /**
@@ -18,17 +19,23 @@ import com.wang.baseadapter.model.RecyclerViewItemArray;
 
 public class TextAdapter extends BaseRecyclerViewAdapter {
 
-
+    public static final int TYPE_TEXT_1 = 1;
+    public static final int TYPE_TEXT_2 = 2;
 
     public TextAdapter(RecyclerViewItemArray itemArray) {
         super(itemArray);
-        addItemType(0, R.layout.item_text);
+        addItemType(TYPE_TEXT_1, R.layout.item_text);
+        addItemType(TYPE_TEXT_2, R.layout.item_text_2);
     }
 
     @Override
     protected void onBindDefViewHolder(BaseViewHolder holder, RecyclerViewItemArray itemArray, int position, int viewType) {
-        if (viewType == 0){
+        if (viewType == TYPE_TEXT_1){
             ItemTextBinding binding = (ItemTextBinding) holder.binding;
+            binding.setData((TextData) itemArray.get(position).getData());
+        }
+        else if (viewType == TYPE_TEXT_2){
+            ItemText2Binding binding = (ItemText2Binding) holder.binding;
             binding.setData((TextData) itemArray.get(position).getData());
         }
     }
@@ -39,7 +46,7 @@ public class TextAdapter extends BaseRecyclerViewAdapter {
         vh.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("test", vh.getAdapterPosition() + "");
+                Log.d("TextAdapter", vh.getAdapterPosition() + "");
             }
         });
     }

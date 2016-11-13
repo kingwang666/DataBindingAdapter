@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="Letters">
+        <item>第1章</item>
+        <item>第2章</item>
+        <item>第3章</item>
+        <item>第4章</item>
+        <item>第5章</item>
+        <item>第6章</item>
+        <item>第7章</item>
+        <item>第8章</item>
+        <item>第9章</item>
+        <item>第10章</item>
+        <item>第11章</item>
+        <item>第12章</item>
+        <item>第13章</item>
+        <item>第14章</item>
+    </array>
+</resources>

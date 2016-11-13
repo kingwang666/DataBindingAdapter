@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.jiudeng009.databindingadapter">
+          package="com.example.jiudeng009.databindingadapter">
 
     <application
         android:allowBackup="true"
@@ -8,13 +8,22 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".MultiTypeActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".StickyHeaderActivity"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

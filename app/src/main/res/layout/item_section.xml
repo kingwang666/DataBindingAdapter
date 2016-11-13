@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <variable
+            name="section"
+            type="com.example.jiudeng009.databindingadapter.model.Section"/>
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@drawable/clickable_transparent_selector">
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/name_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:paddingLeft="32dp"
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            android:text="@{section.name}"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/dividerColor"
+            android:layout_gravity="bottom"/>
+
+    </FrameLayout>
+</layout>
+

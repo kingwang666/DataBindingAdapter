@@ -139,7 +139,6 @@ public abstract class BaseRecyclerViewAdapter<T extends ViewDataBinding> extends
      * @param type 类型
      * @param layoutResId layout
      */
-    @SuppressLint("UseSparseArrays")
     protected void addItemType(int type, int layoutResId) {
         layouts.put(type, layoutResId);
     }
@@ -460,11 +459,11 @@ public abstract class BaseRecyclerViewAdapter<T extends ViewDataBinding> extends
      * @return true需要， false不需要
      */
     private boolean hasNonDataBindingInvalidate(List<Object> payloads) {
-        for (Object payload : payloads) {
-            if (payload != DB_PAYLOAD) {
-                return true;
+            for (Object payload : payloads) {
+                if (payload != DB_PAYLOAD) {
+                    return true;
+                }
             }
-        }
         return false;
     }
 
