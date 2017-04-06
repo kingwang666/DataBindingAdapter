@@ -11,6 +11,8 @@ import com.example.jiudeng009.databindingadapter.adapter.StickyHeaderAdapter;
 import com.example.jiudeng009.databindingadapter.interfaces.OnRecyclerViewClickListener;
 import com.example.jiudeng009.databindingadapter.model.Chapter;
 import com.example.jiudeng009.databindingadapter.model.Section;
+import com.wang.baseadapter.BaseRecyclerViewAdapter;
+import com.wang.baseadapter.SnappingLinearLayoutManager;
 import com.wang.baseadapter.StickyHeaderDecoration;
 import com.wang.baseadapter.listener.OnHeaderClickListener;
 import com.wang.baseadapter.listener.StickyHeaderTouchListener;
@@ -38,13 +40,15 @@ public class StickyHeaderActivity extends AppCompatActivity implements OnRecycle
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         mSideBarView = (WaveSideBarView) findViewById(R.id.side_view);
         initArray();
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerView.setAdapter(new StickyHeaderAdapter(mItemArray, this));
+        mRecyclerView.setLayoutManager(new SnappingLinearLayoutManager(this));
+        StickyHeaderAdapter adapter = new StickyHeaderAdapter(mItemArray, this);
+        adapter.openLoadAnimation(BaseRecyclerViewAdapter.SLIDE_IN_LEFT);
+        mRecyclerView.setAdapter(adapter);
         mRecyclerView.addOnScrollListener(new RecyclerViewListener());
         StickyHeaderDecoration decoration = new StickyHeaderDecoration(StickyHeaderAdapter.TYPE_CHAPTER);
         mRecyclerView.addItemDecoration(decoration);
         mRecyclerView.addOnItemTouchListener(new StickyHeaderTouchListener(this, decoration, this));
-        mRecyclerView.setItemAnimator(new MyDefaultItemAnimator());
+//        mRecyclerView.setItemAnimator(new MyDefaultItemAnimator());
 //        new GravitySnapHelper(Gravity.TOP).attachToRecyclerView(mRecyclerView);
         mSideBarView.setOnTouchLetterChangeListener(new WaveSideBarView.OnTouchLetterChangeListener() {
             @Override
@@ -55,10 +59,11 @@ public class StickyHeaderActivity extends AppCompatActivity implements OnRecycle
                     if (data.getDataType() == StickyHeaderAdapter.TYPE_CHAPTER) {
                         Chapter chapter = (Chapter) data.getData();
                         if (chapter.getName().startsWith(letter)) {
-                            LinearLayoutManager mLayoutManager =
-                                    (LinearLayoutManager) mRecyclerView.getLayoutManager();
-                            mLayoutManager.scrollToPositionWithOffset(i, 0);
+//                            LinearLayoutManager mLayoutManager =
+//                                    (LinearLayoutManager) mRecyclerView.getLayoutManager();
+//                            mLayoutManager.scrollToPositionWithOffset(i, 0);
 //                            smoothMoveToPosition(i);
+                            mRecyclerView.smoothScrollToPosition(i);
                             return;
                         }
                     }
@@ -125,8 +130,8 @@ public class StickyHeaderActivity extends AppCompatActivity implements OnRecycle
             chapter.setOpen(false);
 //            mRecyclerView.getAdapter().notifyItemChanged(position);
             mItemArray.removeAllAtPosition(position + 1, chapter.getSectionSize());
-//            mRecyclerView.getAdapter().notifyItemRangeRemoved(position + 1, chapter.sectionSize);
-            mRecyclerView.getAdapter().notifyDataSetChanged();
+            mRecyclerView.getAdapter().notifyItemRangeRemoved(position + 1, chapter.getSectionSize());
+//            mRecyclerView.getAdapter().notifyDataSetChanged();
             mRecyclerView.smoothScrollToPosition(position);
 //            LinearLayoutManager mLayoutManager =
 //                    (LinearLayoutManager) mRecyclerView.getLayoutManager();

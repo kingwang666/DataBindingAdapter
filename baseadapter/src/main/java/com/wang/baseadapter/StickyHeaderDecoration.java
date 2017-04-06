@@ -3,6 +3,7 @@ package com.wang.baseadapter;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.Region;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.SparseArray;
@@ -10,6 +11,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 public class StickyHeaderDecoration extends RecyclerView.ItemDecoration {
+
+    private static String TAG = StickyHeaderDecoration.class.getSimpleName();
+
     private int mHeaderPosition;
     private int mCurrentItemType;
     private int mStickyHeaderTop;
@@ -46,14 +50,10 @@ public class StickyHeaderDecoration extends RecyclerView.ItemDecoration {
 
         if (mStickyView != null) {
             View v = parent.findChildViewUnder(c.getWidth() / 2, mStickyView.getHeight() + 0.5f);
-//            View firstVisibleItemView = parent.getLayoutManager().getChildAt(0);
-//            int firstVisiblePosition = ((RecyclerView.LayoutParams) firstVisibleItemView.getLayoutParams()).getViewAdapterPosition();
             if (isStickyView(parent, v)) {
                 mStickyHeaderTop = v.getTop() - mStickyView.getHeight();
-                Log.d("fuck", "true stick top " + mStickyHeaderTop);
             } else {
                 mStickyHeaderTop = 0;
-                Log.d("fuck", "stick top " + mStickyHeaderTop);
             }
 
 
@@ -103,15 +103,10 @@ public class StickyHeaderDecoration extends RecyclerView.ItemDecoration {
         if (layoutManager == null || layoutManager.getChildCount() <= 0) {
             return;
         }
-        View firstVisibleItemView = layoutManager.getChildAt(0);
-        int firstVisiblePosition = ((RecyclerView.LayoutParams) firstVisibleItemView.getLayoutParams()).getViewAdapterPosition();
-        if (firstVisibleItemView.getTop() + firstVisibleItemView.getHeight() == 0){
-            firstVisibleItemView = layoutManager.getChildAt(1);
-            firstVisiblePosition++;
-        }
+        int firstVisiblePosition = ((LinearLayoutManager)layoutManager).findFirstVisibleItemPosition();
+        int firstCompletelyVisiblePosition = ((LinearLayoutManager)layoutManager).findFirstCompletelyVisibleItemPosition();
         int headerPosition = findStickyHeaderPosition(parent, firstVisiblePosition);
-        Log.d("fuck", "header " + headerPosition + " first " + firstVisiblePosition + " top " + firstVisibleItemView.getTop());
-        if (headerPosition == -1 || (headerPosition == firstVisiblePosition && firstVisibleItemView.getTop() == 0)) {
+        if (headerPosition == -1 || (headerPosition == firstCompletelyVisiblePosition)) {
             resetPinnedHeader();
             return;
         }
