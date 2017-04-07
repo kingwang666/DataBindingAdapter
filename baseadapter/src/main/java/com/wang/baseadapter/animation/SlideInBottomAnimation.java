@@ -1,6 +1,7 @@
 package com.wang.baseadapter.animation;
 
 import android.animation.Animator;
+import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.view.View;
 
@@ -10,12 +11,10 @@ import android.view.View;
  */
 public class SlideInBottomAnimation implements BaseAnimation {
 
-
-
     @Override
-    public Animator[] getAnimators(View view) {
-        return new Animator[]{
-                ObjectAnimator.ofFloat(view, "translationY", view.getMeasuredHeight(), 0)
-        };
+    public AnimatorSet getAnimators(View view) {
+        AnimatorSet set = new AnimatorSet();
+        set.play(ObjectAnimator.ofFloat(view, "translationY", view.getMeasuredHeight(), 0));
+        return set;
     }
 }

@@ -28,6 +28,7 @@ public class StickyHeaderAdapter extends BaseRecyclerViewAdapter {
         super(itemArray);
         addItemType(TYPE_CHAPTER, R.layout.item_chapter);
         addItemType(TYPE_SECTION, R.layout.item_section);
+        addNoAnimType(TYPE_CHAPTER);
         mListener = listener;
     }
 
@@ -48,11 +49,16 @@ public class StickyHeaderAdapter extends BaseRecyclerViewAdapter {
     }
 
     @Override
-    protected void initItemListener(final BaseViewHolder vh, int viewType) {
+    protected void afterView(BaseViewHolder vh, int viewType) {
+
+    }
+
+    @Override
+    protected void initItemListener(final BaseViewHolder vh, final int viewType) {
         vh.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mListener.onClick(vh.getItemViewType(), vh.getAdapterPosition(), null);
+                mListener.onClick(viewType, vh.getAdapterPosition(), null);
             }
         });
     }

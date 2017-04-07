@@ -12,7 +12,7 @@ import com.example.jiudeng009.databindingadapter.interfaces.OnRecyclerViewClickL
 import com.example.jiudeng009.databindingadapter.model.Chapter;
 import com.example.jiudeng009.databindingadapter.model.Section;
 import com.wang.baseadapter.BaseRecyclerViewAdapter;
-import com.wang.baseadapter.SnappingLinearLayoutManager;
+import com.wang.baseadapter.util.SnappingLinearLayoutManager;
 import com.wang.baseadapter.StickyHeaderDecoration;
 import com.wang.baseadapter.listener.OnHeaderClickListener;
 import com.wang.baseadapter.listener.StickyHeaderTouchListener;

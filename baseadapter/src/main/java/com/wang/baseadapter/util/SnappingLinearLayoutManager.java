@@ -1,4 +1,4 @@
-package com.wang.baseadapter;
+package com.wang.baseadapter.util;
 
 import android.content.Context;
 import android.graphics.PointF;

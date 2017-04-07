@@ -1,18 +1,19 @@
 
 package com.wang.baseadapter;
 
-import android.animation.Animator;
+import android.animation.AnimatorSet;
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.databinding.BindingAdapter;
 import android.databinding.OnRebindCallback;
 import android.databinding.ViewDataBinding;
 import android.support.annotation.CallSuper;
 import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.SparseArray;
+import android.util.SparseIntArray;
 import android.view.ViewGroup;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
@@ -30,54 +31,28 @@ import com.wang.baseadapter.model.RecyclerViewItemArray;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
 import java.util.List;
-
-import com.wang.baseadapter.BR;
 
 public abstract class BaseRecyclerViewAdapter<T extends ViewDataBinding> extends RecyclerView.Adapter<BaseViewHolder<T>> {
 
 
-    private boolean mNextLoadEnable = false;
-    private boolean mLoadingMoreEnable = false;
-    private boolean mFirstOnlyEnable = true;
-    private boolean mOpenAnimationEnable = false;
-
-    protected Context mContext;
-
-    private Interpolator mInterpolator = new LinearInterpolator();
-    private int mDuration = 300;
-    private int mLastPosition = -1;
-    private RequestLoadMoreListener mRequestLoadMoreListener;
-
-    private BaseAnimation mCustomAnimation;
-    private BaseAnimation mSelectAnimation = new AlphaInAnimation();
-
-    /**
-     * layouts indexed with their types
-     */
-    private SparseArray<Integer> layouts;
-
-    protected RecyclerViewItemArray mItemArray;
-
     /**
      * header type
      */
-    public static final int HEADER_VIEW = 0x00000111;
+    public static final int TYPE_HEADER = Integer.MAX_VALUE - 1;
     /**
      * loading type
      */
-    public static final int LOADING_VIEW = 0x00000222;
+    public static final int TYPE_LOADING = Integer.MAX_VALUE - 2;
     /**
      * footer type
      */
-    public static final int FOOTER_VIEW = 0x00000333;
+    public static final int TYPE_FOOTER = Integer.MAX_VALUE - 3;
     /**
      * empty type
      */
-    public static final int EMPTY_VIEW = 0x00000555;
-
-
-
+    public static final int TYPE_EMPTY = Integer.MAX_VALUE - 4;
 
     @IntDef({ALPHA_IN, SCALE_IN, SLIDE_IN_BOTTOM, SLIDE_IN_LEFT, SLIDE_IN_RIGHT})
     @Retention(RetentionPolicy.SOURCE)
@@ -88,27 +63,60 @@ public abstract class BaseRecyclerViewAdapter<T extends ViewDataBinding> extends
     /**
      * Use with {@link #openLoadAnimation}
      */
-    public static final int ALPHA_IN = 0x00000001;
+    public static final int ALPHA_IN = 1;
     /**
      * Use with {@link #openLoadAnimation}
      */
-    public static final int SCALE_IN = 0x00000002;
+    public static final int SCALE_IN = 2;
     /**
      * Use with {@link #openLoadAnimation}
      */
-    public static final int SLIDE_IN_BOTTOM = 0x00000003;
+    public static final int SLIDE_IN_BOTTOM = 3;
     /**
      * Use with {@link #openLoadAnimation}
      */
-    public static final int SLIDE_IN_LEFT = 0x00000004;
+    public static final int SLIDE_IN_LEFT = 4;
     /**
      * Use with {@link #openLoadAnimation}
      */
-    public static final int SLIDE_IN_RIGHT = 0x00000005;
+    public static final int SLIDE_IN_RIGHT = 5;
 
+    private boolean mNextLoadEnable = false;
+    private boolean mLoadingMoreEnable = false;
+
+    private boolean mFirstOnlyEnable = true;
+    private boolean mOpenAnimationEnable = false;
+
+    private Interpolator mInterpolator = new LinearInterpolator();
+    private int mDuration = 300;
+    private int mLastPosition = -1;
+    private RequestLoadMoreListener mRequestLoadMoreListener;
+
+    private BaseAnimation mSelectAnimation = new AlphaInAnimation();
+
+    private List<Integer> mNoAnimTypes;
+
+    /**
+     * layouts indexed with their types
+     */
+    private SparseIntArray layouts;
+
+    protected RecyclerViewItemArray mItemArray;
+
+
+
+    public BaseRecyclerViewAdapter(RecyclerViewItemArray itemArray) {
+        this.mItemArray = itemArray == null ? new RecyclerViewItemArray() : itemArray;
+        layouts = new SparseIntArray();
+        mNoAnimTypes = new ArrayList<>();
+    }
 
     public void setOnLoadMoreListener(RequestLoadMoreListener requestLoadMoreListener) {
         this.mRequestLoadMoreListener = requestLoadMoreListener;
+    }
+
+    public void addNoAnimType(int type){
+        mNoAnimTypes.add(type);
     }
 
     public void setDuration(int duration) {
@@ -127,16 +135,10 @@ public abstract class BaseRecyclerViewAdapter<T extends ViewDataBinding> extends
 
     }
 
-
-    @SuppressLint("UseSparseArrays")
-    public BaseRecyclerViewAdapter(RecyclerViewItemArray itemArray) {
-        this.mItemArray = itemArray == null ? new RecyclerViewItemArray() : itemArray;
-        layouts = new SparseArray<>();
-    }
-
     /**
      * 添加对应的type和其layout
-     * @param type 类型
+     *
+     * @param type        类型
      * @param layoutResId layout
      */
     protected void addItemType(int type, int layoutResId) {
@@ -145,6 +147,7 @@ public abstract class BaseRecyclerViewAdapter<T extends ViewDataBinding> extends
 
     /**
      * 获取对应的layout
+     *
      * @param type 类型
      * @return layoutId
      */
@@ -152,116 +155,12 @@ public abstract class BaseRecyclerViewAdapter<T extends ViewDataBinding> extends
         return layouts.get(type);
     }
 
-    public void remove(int position) {
-        mItemArray.remove(position);
-        notifyItemRemoved(position);
-    }
-
-    public void clear() {
-        mItemArray.clear();
-        if (mRequestLoadMoreListener != null) {
-            mNextLoadEnable = true;
-        }
-        mLastPosition = -1;
-        notifyDataSetChanged();
-    }
-
-    /**
-     * 移除所有的type类型数据
-     *
-     * @param type 移除的type
-     */
-    public void removeAllType(int type) {
-        if (mItemArray.removeAllType(type) != 0) {
-            notifyDataSetChanged();
-        }
-    }
-
-    /**
-     * 移除type类型的第一个数据
-     *
-     * @param type 类型
-     */
-    public void removeFirstType(int type) {
-        int position = mItemArray.removeFirstType(type);
-        if (position != -1) {
-            notifyItemRemoved(position);
-        }
-    }
-
-    public void add(int position, ItemData item) {
-        mItemArray.add(position, item);
-        notifyItemInserted(position);
-    }
-
-    public void add(ItemData item) {
-        if (mItemArray.findLastTypePosition(LOADING_VIEW) != -1
-                || mItemArray.findLastTypePosition(FOOTER_VIEW) != -1) {
-            mItemArray.add(mItemArray.size() - 1, item);
-            notifyItemInserted(mItemArray.size() - 2);
-        } else {
-            mItemArray.add(item);
-            notifyItemInserted(mItemArray.size() - 1);
-        }
-
-    }
-
-    public <E> void addAll(int type, List<E> data) {
-        if (mItemArray.findLastTypePosition(LOADING_VIEW) != -1
-                || mItemArray.findLastTypePosition(FOOTER_VIEW) != -1) {
-            for (E e : data) {
-                mItemArray.add(mItemArray.size() - 1, new ItemData<>(type, e));
-            }
-        } else {
-            for (E e : data) {
-                mItemArray.add(new ItemData<>(type, e));
-            }
-        }
-        notifyDataSetChanged();
-    }
-
-
-
-    /**
-     * 增加到type类型的最后一个
-     */
-    public void addAfterLast(int type, ItemData data) {
-        int position = mItemArray.addAfterLast(type, data);
-        if (position != -1) {
-            notifyItemInserted(position);
-        }
-    }
-
-    /**
-     * 增加到type类型的第一个
-     */
-    public void addBeforeFirst(int type, ItemData data) {
-        int position = mItemArray.addBeforeFirst(type, data);
-        if (position != -1) {
-            notifyItemInserted(position);
-        }
-    }
-
-
-    /**
-     * setting up a new instance to data;
-     *
-     * @param itemArray
-     */
-    public void setNewData(RecyclerViewItemArray itemArray) {
-        this.mItemArray = itemArray;
-        if (mRequestLoadMoreListener != null) {
-            mNextLoadEnable = true;
-        }
-        mLastPosition = -1;
-        notifyDataSetChanged();
-    }
-
     /**
      * 底部自动加载更多后notify
+     *
      * @param type 插入数据类型
      * @param data 插入的数据
-     * @param <E> 数据类
+     * @param <E>  数据类
      */
     public <E> void notifyDataChangedAfterLoadMore(int type, List<E> data) {
         notifyDataChangedAfterLoadMore(type, data, mNextLoadEnable);
@@ -269,9 +168,10 @@ public abstract class BaseRecyclerViewAdapter<T extends ViewDataBinding> extends
 
     /**
      * 底部自动加载更多后notify
-     * @param type 插入数据类型
-     * @param data 插入的数据
-     * @param <E> 数据类
+     *
+     * @param type       插入数据类型
+     * @param data       插入的数据
+     * @param <E>        数据类
      * @param isNextLoad 下次滑到底部是否还自动加载
      */
     public <E> void notifyDataChangedAfterLoadMore(int type, List<E> data, boolean isNextLoad) {
@@ -284,6 +184,7 @@ public abstract class BaseRecyclerViewAdapter<T extends ViewDataBinding> extends
 
     /**
      * 底部自动加载更多后notify
+     *
      * @param isNextLoad 下次滑到底部是否还自动加载
      */
     public void notifyDataChangedAfterLoadMore(boolean isNextLoad) {
@@ -294,6 +195,7 @@ public abstract class BaseRecyclerViewAdapter<T extends ViewDataBinding> extends
 
     /**
      * 获取列表数据
+     *
      * @return list
      */
     public RecyclerViewItemArray getItemArray() {
@@ -350,19 +252,18 @@ public abstract class BaseRecyclerViewAdapter<T extends ViewDataBinding> extends
     @Override
     @CallSuper
     public BaseViewHolder<T> onCreateViewHolder(ViewGroup parent, int viewType) {
-        mContext = parent.getContext();
         BaseViewHolder<T> baseViewHolder;
         switch (viewType) {
-            case LOADING_VIEW:
+            case TYPE_LOADING:
                 baseViewHolder = getLoadingView(parent);
                 break;
-            case HEADER_VIEW:
+            case TYPE_HEADER:
                 baseViewHolder = getHeadView(parent);
                 break;
-            case EMPTY_VIEW:
+            case TYPE_EMPTY:
                 baseViewHolder = getEmptyView(parent);
                 break;
-            case FOOTER_VIEW:
+            case TYPE_FOOTER:
                 baseViewHolder = getFooterView(parent);
                 break;
             default:
@@ -385,33 +286,34 @@ public abstract class BaseRecyclerViewAdapter<T extends ViewDataBinding> extends
     }
 
 
-
     private void bindItem(BaseViewHolder<T> holder, int position, List<Object> payloads) {
-        switch (holder.getItemViewType()) {
-            case LOADING_VIEW:
+        int type = holder.getItemViewType();
+        switch (type) {
+            case TYPE_LOADING:
                 onBindLoadViewHolder(holder, mItemArray.get(position));
                 addLoadMore(holder);
                 break;
-            case HEADER_VIEW:
+            case TYPE_HEADER:
                 onBindHeadViewHolder(holder, mItemArray.get(position));
                 break;
-            case EMPTY_VIEW:
+            case TYPE_EMPTY:
                 onBindEmptyViewHolder(holder, mItemArray.get(position));
                 break;
-            case FOOTER_VIEW:
+            case TYPE_FOOTER:
                 onBindFooterViewHolder(holder, mItemArray.get(position));
                 break;
             default:
                 onBindDefViewHolder(holder, mItemArray, position, getItemViewType(position));
-                addAnimation(holder);
+                addAnimation(holder, type);
                 break;
         }
     }
 
     /**
      * 绑定数据到footer
+     *
      * @param holder viewHolder
-     * @param data 数据
+     * @param data   数据
      */
     protected void onBindFooterViewHolder(BaseViewHolder<T> holder, ItemData data) {
         holder.binding.setVariable(com.wang.baseadapter.BR.footer, data.getData());
@@ -419,8 +321,9 @@ public abstract class BaseRecyclerViewAdapter<T extends ViewDataBinding> extends
 
     /**
      * 绑定数据到empty
+     *
      * @param holder viewHolder
-     * @param data 数据
+     * @param data   数据
      */
     protected void onBindEmptyViewHolder(BaseViewHolder<T> holder, ItemData data) {
         holder.binding.setVariable(BR.empty, data.getData());
@@ -428,8 +331,9 @@ public abstract class BaseRecyclerViewAdapter<T extends ViewDataBinding> extends
 
     /**
      * 绑定数据到head
+     *
      * @param holder viewHolder
-     * @param data 数据
+     * @param data   数据
      */
     protected void onBindHeadViewHolder(BaseViewHolder<T> holder, ItemData data) {
         holder.binding.setVariable(BR.head, data.getData());
@@ -437,8 +341,9 @@ public abstract class BaseRecyclerViewAdapter<T extends ViewDataBinding> extends
 
     /**
      * 绑定数据到load
+     *
      * @param holder viewHolder
-     * @param data 数据
+     * @param data   数据
      */
     protected void onBindLoadViewHolder(BaseViewHolder<T> holder, ItemData data) {
         holder.binding.setVariable(BR.load, data.getData());
@@ -446,7 +351,8 @@ public abstract class BaseRecyclerViewAdapter<T extends ViewDataBinding> extends
 
     /**
      * 绑定数据到自定义视图
-     * @param holder viewHolder
+     *
+     * @param holder    viewHolder
      * @param itemArray 数据
      * @param position
      */
@@ -455,15 +361,16 @@ public abstract class BaseRecyclerViewAdapter<T extends ViewDataBinding> extends
 
     /**
      * 查询数据是否需要binding
+     *
      * @param payloads 数据
      * @return true需要， false不需要
      */
     private boolean hasNonDataBindingInvalidate(List<Object> payloads) {
-            for (Object payload : payloads) {
-                if (payload != DB_PAYLOAD) {
-                    return true;
-                }
+        for (Object payload : payloads) {
+            if (payload != DB_PAYLOAD) {
+                return true;
             }
+        }
         return false;
     }
 
@@ -475,6 +382,21 @@ public abstract class BaseRecyclerViewAdapter<T extends ViewDataBinding> extends
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         mRecyclerView = recyclerView;
+        if (recyclerView.getLayoutManager() instanceof GridLayoutManager){
+            final GridLayoutManager manager = (GridLayoutManager) recyclerView.getLayoutManager();
+            if (manager.getSpanSizeLookup() instanceof GridLayoutManager.DefaultSpanSizeLookup){
+                manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+                    @Override
+                    public int getSpanSize(int position) {
+                        int type = mItemArray.get(position).getDataType();
+                        if (type >= TYPE_EMPTY){
+                            return manager.getSpanCount(); //宽度为整个recycler的宽度
+                        }
+                        return 1;
+                    }
+                });
+            }
+        }
     }
 
     @Override
@@ -484,22 +406,22 @@ public abstract class BaseRecyclerViewAdapter<T extends ViewDataBinding> extends
 
 
     private BaseViewHolder<T> getEmptyView(ViewGroup parent) {
-        Integer layoutId = getItemLayout(EMPTY_VIEW);
+        Integer layoutId = getItemLayout(TYPE_EMPTY);
         return BaseViewHolder.create(parent, layoutId == null ? R.layout.def_empty_view : layoutId);
     }
 
     private BaseViewHolder<T> getHeadView(ViewGroup parent) {
-        Integer layoutId = getItemLayout(HEADER_VIEW);
+        Integer layoutId = getItemLayout(TYPE_HEADER);
         return BaseViewHolder.create(parent, layoutId == null ? R.layout.def_head_view : layoutId);
     }
 
     private BaseViewHolder<T> getFooterView(ViewGroup parent) {
-        Integer layoutId = getItemLayout(FOOTER_VIEW);
+        Integer layoutId = getItemLayout(TYPE_FOOTER);
         return BaseViewHolder.create(parent, layoutId == null ? R.layout.def_footer_view : layoutId);
     }
 
     private BaseViewHolder<T> getLoadingView(ViewGroup parent) {
-        Integer layoutId = getItemLayout(LOADING_VIEW);
+        Integer layoutId = getItemLayout(TYPE_LOADING);
         return BaseViewHolder.create(parent, layoutId == null ? R.layout.def_loading : layoutId);
     }
 
@@ -507,7 +429,7 @@ public abstract class BaseRecyclerViewAdapter<T extends ViewDataBinding> extends
     public void onViewAttachedToWindow(BaseViewHolder<T> holder) {
         super.onViewAttachedToWindow(holder);
         int type = holder.getItemViewType();
-        if (type == EMPTY_VIEW || type == HEADER_VIEW || type == FOOTER_VIEW || type == LOADING_VIEW) {
+        if (type >= TYPE_EMPTY) {
             setFullSpan(holder);
         }
     }
@@ -526,6 +448,7 @@ public abstract class BaseRecyclerViewAdapter<T extends ViewDataBinding> extends
 
     /**
      * 调用加载更多请求接口
+     *
      * @param holder
      */
     private void addLoadMore(RecyclerView.ViewHolder holder) {
@@ -535,47 +458,45 @@ public abstract class BaseRecyclerViewAdapter<T extends ViewDataBinding> extends
         }
     }
 
-    protected void afterView(final BaseViewHolder vh, int viewType){
+    protected void afterView(final BaseViewHolder vh, int viewType) {
 
     }
 
     /**
      * 初始化item接听接口
-     * @param vh 对应的viewHolder
+     *
+     * @param vh       对应的viewHolder
      * @param viewType 对应的type
      */
     protected void initItemListener(final BaseViewHolder vh, int viewType) {
 
     }
 
+    public void resetAnimPostion(){
+        mLastPosition = -1;
+    }
+
     /**
      * 加入并开始动画
+     *
      * @param holder 对应的viewHolder
      */
-    private void addAnimation(RecyclerView.ViewHolder holder) {
-        if (mOpenAnimationEnable) {
+    private void addAnimation(RecyclerView.ViewHolder holder, int type) {
+        if (mOpenAnimationEnable && mSelectAnimation != null && !mNoAnimTypes.contains(type)) {
             if (!mFirstOnlyEnable || holder.getLayoutPosition() > mLastPosition) {
-                BaseAnimation animation;
-                if (mCustomAnimation != null) {
-                    animation = mCustomAnimation;
-                } else {
-                    animation = mSelectAnimation;
-                }
-                for (Animator anim : animation.getAnimators(holder.itemView)) {
-                    startAnim(anim, holder.getLayoutPosition());
-                }
+                AnimatorSet set = mSelectAnimation.getAnimators(holder.itemView);
+                set.setDuration(mDuration);
+                set.setInterpolator(mInterpolator);
+                set.start();
                 mLastPosition = holder.getLayoutPosition();
             }
         }
     }
 
-    protected void startAnim(Animator anim, int index) {
-        anim.setDuration(mDuration).start();
-        anim.setInterpolator(mInterpolator);
-    }
 
     /**
      * 判断是否需要加载更多
+     *
      * @return true需要
      */
     private boolean isLoadMore() {
@@ -596,7 +517,6 @@ public abstract class BaseRecyclerViewAdapter<T extends ViewDataBinding> extends
      */
     public void openLoadAnimation(@AnimationType int animationType) {
         this.mOpenAnimationEnable = true;
-        mCustomAnimation = null;
         switch (animationType) {
             case ALPHA_IN:
                 mSelectAnimation = new AlphaInAnimation();
@@ -625,7 +545,7 @@ public abstract class BaseRecyclerViewAdapter<T extends ViewDataBinding> extends
      */
     public void openLoadAnimation(BaseAnimation animation) {
         this.mOpenAnimationEnable = true;
-        this.mCustomAnimation = animation;
+        this.mSelectAnimation = animation;
     }
 
     public void openLoadAnimation() {
@@ -634,6 +554,7 @@ public abstract class BaseRecyclerViewAdapter<T extends ViewDataBinding> extends
 
     /**
      * 设置动画是否只有第一次有效果
+     *
      * @param firstOnly true动画只显示一次
      */
     public void isFirstOnly(boolean firstOnly) {
@@ -648,6 +569,7 @@ public abstract class BaseRecyclerViewAdapter<T extends ViewDataBinding> extends
 
     /**
      * data binding, {@link BindingAdapter}, load image
+     *
      * @param view
      * @param resId
      */

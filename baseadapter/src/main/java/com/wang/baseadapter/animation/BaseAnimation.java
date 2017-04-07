@@ -1,13 +1,13 @@
 package com.wang.baseadapter.animation;
 
-import android.animation.Animator;
+import android.animation.AnimatorSet;
 import android.view.View;
 
 /**
  * base animation
  */
-public interface  BaseAnimation {
+public interface BaseAnimation {
 
-    Animator[] getAnimators(View view);
+    AnimatorSet getAnimators(View view);
 
 }
