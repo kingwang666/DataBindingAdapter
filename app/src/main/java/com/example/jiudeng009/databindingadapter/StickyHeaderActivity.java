@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.widget.Toast;
 
 import com.example.jiudeng009.databindingadapter.adapter.StickyHeaderAdapter;
@@ -12,6 +13,7 @@ import com.example.jiudeng009.databindingadapter.interfaces.OnRecyclerViewClickL
 import com.example.jiudeng009.databindingadapter.model.Chapter;
 import com.example.jiudeng009.databindingadapter.model.Section;
 import com.wang.baseadapter.BaseRecyclerViewAdapter;
+import com.wang.baseadapter.util.GravitySnapHelper;
 import com.wang.baseadapter.util.SnappingLinearLayoutManager;
 import com.wang.baseadapter.StickyHeaderDecoration;
 import com.wang.baseadapter.listener.OnHeaderClickListener;
@@ -48,8 +50,7 @@ public class StickyHeaderActivity extends AppCompatActivity implements OnRecycle
         StickyHeaderDecoration decoration = new StickyHeaderDecoration(StickyHeaderAdapter.TYPE_CHAPTER);
         mRecyclerView.addItemDecoration(decoration);
         mRecyclerView.addOnItemTouchListener(new StickyHeaderTouchListener(this, decoration, this));
-//        mRecyclerView.setItemAnimator(new MyDefaultItemAnimator());
-//        new GravitySnapHelper(Gravity.TOP).attachToRecyclerView(mRecyclerView);
+        new GravitySnapHelper(Gravity.TOP).attachToRecyclerView(mRecyclerView);
         mSideBarView.setOnTouchLetterChangeListener(new WaveSideBarView.OnTouchLetterChangeListener() {
             @Override
             public void onLetterChange(String letter) {
@@ -59,10 +60,6 @@ public class StickyHeaderActivity extends AppCompatActivity implements OnRecycle
                     if (data.getDataType() == StickyHeaderAdapter.TYPE_CHAPTER) {
                         Chapter chapter = (Chapter) data.getData();
                         if (chapter.getName().startsWith(letter)) {
-//                            LinearLayoutManager mLayoutManager =
-//                                    (LinearLayoutManager) mRecyclerView.getLayoutManager();
-//                            mLayoutManager.scrollToPositionWithOffset(i, 0);
-//                            smoothMoveToPosition(i);
                             mRecyclerView.smoothScrollToPosition(i);
                             return;
                         }
@@ -70,24 +67,6 @@ public class StickyHeaderActivity extends AppCompatActivity implements OnRecycle
                 }
             }
         });
-    }
-
-    private void smoothMoveToPosition(int n) {
-        mRecyclerView.stopScroll();
-        mIndex = n;
-        LinearLayoutManager layoutManager = (LinearLayoutManager) mRecyclerView.getLayoutManager();
-        int firstItem = layoutManager.findFirstVisibleItemPosition();
-        int lastItem = layoutManager.findLastVisibleItemPosition();
-        if (n <= firstItem) {
-            mRecyclerView.smoothScrollToPosition(n);
-        } else if (n <= lastItem) {
-            int top = mRecyclerView.getChildAt(n - firstItem).getTop();
-            mRecyclerView.smoothScrollBy(0, top);
-        } else {
-            mRecyclerView.smoothScrollToPosition(n);
-            move = true;
-        }
-
     }
 
 
