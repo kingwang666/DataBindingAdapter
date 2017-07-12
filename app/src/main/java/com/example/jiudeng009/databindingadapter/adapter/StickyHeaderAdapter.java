@@ -10,7 +10,7 @@ import com.example.jiudeng009.databindingadapter.model.Chapter;
 import com.example.jiudeng009.databindingadapter.model.Section;
 import com.wang.baseadapter.BaseRecyclerViewAdapter;
 import com.wang.baseadapter.BaseViewHolder;
-import com.wang.baseadapter.model.RecyclerViewItemArray;
+import com.wang.baseadapter.model.ItemArray;
 
 /**
  * Created on 2016/11/13.
@@ -24,7 +24,7 @@ public class StickyHeaderAdapter extends BaseRecyclerViewAdapter {
 
     private OnRecyclerViewClickListener mListener;
 
-    public StickyHeaderAdapter(RecyclerViewItemArray itemArray, OnRecyclerViewClickListener listener) {
+    public StickyHeaderAdapter(ItemArray itemArray, OnRecyclerViewClickListener listener) {
         super(itemArray);
         addItemType(TYPE_CHAPTER, R.layout.item_chapter);
         addItemType(TYPE_SECTION, R.layout.item_section);
@@ -33,7 +33,7 @@ public class StickyHeaderAdapter extends BaseRecyclerViewAdapter {
     }
 
     @Override
-    protected void onBindDefViewHolder(BaseViewHolder holder, RecyclerViewItemArray itemArray, int position, int viewType) {
+    protected void onBindDefViewHolder(BaseViewHolder holder, ItemArray itemArray, int position, int viewType) {
         switch (viewType) {
             case TYPE_CHAPTER: {
                 ItemChapterBinding binding = (ItemChapterBinding) holder.binding;

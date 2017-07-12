@@ -6,11 +6,11 @@ import java.io.Serializable;
 /**
  * 列表数据类
  */
-public class ItemData<T> implements Serializable {
+public class ItemData implements Serializable {
     private int mDataType;
-    private T mData;
+    private Object mData;
 
-    public ItemData(int dataType, T data) {
+    public ItemData(int dataType, Object data) {
         this.mDataType = dataType;
         this.mData = data;
     }
@@ -26,11 +26,11 @@ public class ItemData<T> implements Serializable {
         this.mDataType = dataType;
     }
 
-    public T getData() {
+    public Object getData() {
         return mData;
     }
 
-    public void setData(T data) {
+    public void setData(Object data) {
         this.mData = data;
     }
 }

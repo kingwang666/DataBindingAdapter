@@ -2,7 +2,6 @@
 package com.wang.baseadapter;
 
 import android.animation.AnimatorSet;
-import android.annotation.SuppressLint;
 import android.databinding.BindingAdapter;
 import android.databinding.OnRebindCallback;
 import android.databinding.ViewDataBinding;
@@ -12,7 +11,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.view.ViewGroup;
 import android.view.animation.Interpolator;
@@ -27,7 +25,7 @@ import com.wang.baseadapter.animation.SlideInBottomAnimation;
 import com.wang.baseadapter.animation.SlideInLeftAnimation;
 import com.wang.baseadapter.animation.SlideInRightAnimation;
 import com.wang.baseadapter.model.ItemData;
-import com.wang.baseadapter.model.RecyclerViewItemArray;
+import com.wang.baseadapter.model.ItemArray;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -101,12 +99,12 @@ public abstract class BaseRecyclerViewAdapter<T extends ViewDataBinding> extends
      */
     private SparseIntArray layouts;
 
-    protected RecyclerViewItemArray mItemArray;
+    protected ItemArray mItemArray;
 
 
 
-    public BaseRecyclerViewAdapter(RecyclerViewItemArray itemArray) {
-        this.mItemArray = itemArray == null ? new RecyclerViewItemArray() : itemArray;
+    public BaseRecyclerViewAdapter(ItemArray itemArray) {
+        this.mItemArray = itemArray == null ? new ItemArray() : itemArray;
         layouts = new SparseIntArray();
         mNoAnimTypes = new ArrayList<>();
     }
@@ -151,7 +149,7 @@ public abstract class BaseRecyclerViewAdapter<T extends ViewDataBinding> extends
      * @param type 类型
      * @return layoutId
      */
-    protected Integer getItemLayout(int type) {
+    protected int getItemLayout(int type) {
         return layouts.get(type);
     }
 
@@ -176,7 +174,7 @@ public abstract class BaseRecyclerViewAdapter<T extends ViewDataBinding> extends
      */
     public <E> void notifyDataChangedAfterLoadMore(int type, List<E> data, boolean isNextLoad) {
         for (E e : data) {
-            mItemArray.add(mItemArray.size() - 1, new ItemData<>(type, e));
+            mItemArray.add(mItemArray.size() - 1, new ItemData(type, e));
         }
         notifyDataChangedAfterLoadMore(isNextLoad);
 
@@ -198,7 +196,7 @@ public abstract class BaseRecyclerViewAdapter<T extends ViewDataBinding> extends
      *
      * @return list
      */
-    public RecyclerViewItemArray getItemArray() {
+    public ItemArray getItemArray() {
         return mItemArray;
     }
 
@@ -356,7 +354,7 @@ public abstract class BaseRecyclerViewAdapter<T extends ViewDataBinding> extends
      * @param itemArray 数据
      * @param position
      */
-    protected abstract void onBindDefViewHolder(BaseViewHolder<T> holder, RecyclerViewItemArray itemArray, int position, int viewType);
+    protected abstract void onBindDefViewHolder(BaseViewHolder<T> holder, ItemArray itemArray, int position, int viewType);
 
 
     /**
@@ -406,23 +404,23 @@ public abstract class BaseRecyclerViewAdapter<T extends ViewDataBinding> extends
 
 
     private BaseViewHolder<T> getEmptyView(ViewGroup parent) {
-        Integer layoutId = getItemLayout(TYPE_EMPTY);
-        return BaseViewHolder.create(parent, layoutId == null ? R.layout.def_empty_view : layoutId);
+        int layoutId = getItemLayout(TYPE_EMPTY);
+        return BaseViewHolder.create(parent, layoutId == 0 ? R.layout.def_empty_view : layoutId);
     }
 
     private BaseViewHolder<T> getHeadView(ViewGroup parent) {
-        Integer layoutId = getItemLayout(TYPE_HEADER);
-        return BaseViewHolder.create(parent, layoutId == null ? R.layout.def_head_view : layoutId);
+        int layoutId = getItemLayout(TYPE_HEADER);
+        return BaseViewHolder.create(parent, layoutId == 0 ? R.layout.def_head_view : layoutId);
     }
 
     private BaseViewHolder<T> getFooterView(ViewGroup parent) {
-        Integer layoutId = getItemLayout(TYPE_FOOTER);
-        return BaseViewHolder.create(parent, layoutId == null ? R.layout.def_footer_view : layoutId);
+        int layoutId = getItemLayout(TYPE_FOOTER);
+        return BaseViewHolder.create(parent, layoutId == 0 ? R.layout.def_footer_view : layoutId);
     }
 
     private BaseViewHolder<T> getLoadingView(ViewGroup parent) {
-        Integer layoutId = getItemLayout(TYPE_LOADING);
-        return BaseViewHolder.create(parent, layoutId == null ? R.layout.def_loading : layoutId);
+        int layoutId = getItemLayout(TYPE_LOADING);
+        return BaseViewHolder.create(parent, layoutId == 0 ? R.layout.def_loading : layoutId);
     }
 
     @Override

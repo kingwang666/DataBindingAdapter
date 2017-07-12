@@ -19,7 +19,7 @@ import com.wang.baseadapter.StickyHeaderDecoration;
 import com.wang.baseadapter.listener.OnHeaderClickListener;
 import com.wang.baseadapter.listener.StickyHeaderTouchListener;
 import com.wang.baseadapter.model.ItemData;
-import com.wang.baseadapter.model.RecyclerViewItemArray;
+import com.wang.baseadapter.model.ItemArray;
 import com.wang.baseadapter.widget.WaveSideBarView;
 
 /**
@@ -31,7 +31,7 @@ public class StickyHeaderActivity extends AppCompatActivity implements OnRecycle
 
     private RecyclerView mRecyclerView;
     private WaveSideBarView mSideBarView;
-    private RecyclerViewItemArray mItemArray;
+    private ItemArray mItemArray;
     private boolean move;
     private int mIndex;
 
@@ -71,14 +71,14 @@ public class StickyHeaderActivity extends AppCompatActivity implements OnRecycle
 
 
     private void initArray() {
-        mItemArray = new RecyclerViewItemArray();
+        mItemArray = new ItemArray();
         for (int i = 1; i < 15; i++) {
             Chapter chapter = new Chapter("第" + i + "章", 9);
-            mItemArray.add(new ItemData<>(StickyHeaderAdapter.TYPE_CHAPTER, chapter));
+            mItemArray.add(new ItemData(StickyHeaderAdapter.TYPE_CHAPTER, chapter));
             for (int j = 1; j < 10; j++) {
                 Section section = new Section(i + "-" + j);
                 chapter.getSections().add(section);
-                mItemArray.add(new ItemData<>(StickyHeaderAdapter.TYPE_SECTION, section));
+                mItemArray.add(new ItemData(StickyHeaderAdapter.TYPE_SECTION, section));
             }
         }
     }

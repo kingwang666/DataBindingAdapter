@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * RecyclerView列表类
  */
-public class RecyclerViewItemArray extends ArrayList<ItemData> {
+public class ItemArray extends ArrayList<ItemData> {
 
     /**
      * 找出type类型的第一个数据的位置
@@ -144,7 +144,7 @@ public class RecyclerViewItemArray extends ArrayList<ItemData> {
     public <E> int addAllType(int type, List<E> datas) {
         int count = 0;
         for (E e : datas) {
-            addAfterLast(type, new ItemData<>(type, e));
+            addAfterLast(type, new ItemData(type, e));
             count++;
         }
         return count;
@@ -162,7 +162,7 @@ public class RecyclerViewItemArray extends ArrayList<ItemData> {
     public <E> int addAllAtLast(int type, List<E> datas) {
         int count = 0;
         for (E e : datas) {
-            add(new ItemData<>(type, e));
+            add(new ItemData(type, e));
             count++;
         }
         return count;
@@ -179,7 +179,7 @@ public class RecyclerViewItemArray extends ArrayList<ItemData> {
     public <E> int addAllAtPosition(int position, int type, List<E> datas) {
         int count = 0;
         for (E e : datas) {
-            add(position + count, new ItemData<>(type, e));
+            add(position + count, new ItemData(type, e));
             count++;
         }
         return count;

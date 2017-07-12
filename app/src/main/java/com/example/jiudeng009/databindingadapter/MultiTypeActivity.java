@@ -13,7 +13,7 @@ import com.wang.baseadapter.BaseRecyclerViewAdapter;
 import com.wang.baseadapter.model.HeadModel;
 import com.wang.baseadapter.model.ItemData;
 import com.wang.baseadapter.model.LoadModel;
-import com.wang.baseadapter.model.RecyclerViewItemArray;
+import com.wang.baseadapter.model.ItemArray;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ import java.util.List;
 public class MultiTypeActivity extends AppCompatActivity implements BaseRecyclerViewAdapter.RequestLoadMoreListener{
 
     private RecyclerView recyclerView;
-    private RecyclerViewItemArray itemArray;
+    private ItemArray itemArray;
     private TextAdapter adapter;
     private int page = 1;
 
@@ -40,12 +40,12 @@ public class MultiTypeActivity extends AppCompatActivity implements BaseRecycler
     }
 
     private void init(){
-        itemArray = new RecyclerViewItemArray();
-        itemArray.add(new ItemData<>(BaseRecyclerViewAdapter.TYPE_HEADER, new HeadModel(R.mipmap.jd_l_norecord_icon)));
+        itemArray = new ItemArray();
+        itemArray.add(new ItemData(BaseRecyclerViewAdapter.TYPE_HEADER, new HeadModel(R.mipmap.jd_l_norecord_icon)));
         for (int i = 0; i < 10; i++){
-            itemArray.add(new ItemData<>( i % 2 == 0 ? TextAdapter.TYPE_TEXT_1 : TextAdapter.TYPE_TEXT_2, new TextData(i + "")));
+            itemArray.add(new ItemData( i % 2 == 0 ? TextAdapter.TYPE_TEXT_1 : TextAdapter.TYPE_TEXT_2, new TextData(i + "")));
         }
-        itemArray.add(new ItemData<>(BaseRecyclerViewAdapter.TYPE_LOADING, new LoadModel(false, "loading")));
+        itemArray.add(new ItemData(BaseRecyclerViewAdapter.TYPE_LOADING, new LoadModel(false, "loading")));
     }
 
     @Override
