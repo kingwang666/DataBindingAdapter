@@ -12,6 +12,7 @@
 <img src="screenshot/sticky_header.jpg" width=200></img> <img src="screenshot/multi_type.jpg" width=200></img> <img src="screenshot/side.gif" width=200 ></img> <img src="screenshot/swipe.gif" width=200 ></img>
 
 ## Thanks ##
+[AndroidSwipeLayout](https://github.com/daimajia/AndroidSwipeLayout)  
 [WaveSideBar](https://github.com/Solartisan/WaveSideBar)  
 [RecyclerItemDecoration](https://github.com/dinuscxj/RecyclerItemDecoration)  
 [RecyclerViewSnap](https://github.com/rubensousa/RecyclerViewSnap)
