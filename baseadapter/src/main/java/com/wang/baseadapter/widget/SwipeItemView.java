@@ -211,7 +211,8 @@ public class SwipeItemView extends LinearLayout {
         if (smooth)
             viewDragHelper.smoothSlideViewTo(contentView, 0, 0);
         else {
-
+            contentView.layout(0, 0, contentView.getMeasuredWidth(), contentView.getMeasuredHeight());
+            actionView.layout(contentView.getMeasuredWidth(), 0, contentView.getMeasuredWidth() + dragDistance, actionView.getMeasuredHeight());
             if (notify) {
                 dispatchSwipeEvent(false);
             }
