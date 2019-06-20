@@ -1,7 +1,5 @@
 package com.wang.baseadapter;
 
-import android.support.v7.widget.RecyclerView;
-
 import com.wang.baseadapter.model.ItemArray;
 import com.wang.baseadapter.util.SwipeAdapterInterface;
 import com.wang.baseadapter.util.SwipeItemMangerImpl;

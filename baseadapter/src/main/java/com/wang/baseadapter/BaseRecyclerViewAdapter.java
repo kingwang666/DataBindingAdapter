@@ -2,15 +2,15 @@
 package com.wang.baseadapter;
 
 import android.animation.AnimatorSet;
-import android.databinding.BindingAdapter;
-import android.databinding.OnRebindCallback;
-import android.databinding.ViewDataBinding;
-import android.support.annotation.CallSuper;
-import android.support.annotation.IntDef;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
+import androidx.databinding.BindingAdapter;
+import androidx.databinding.OnRebindCallback;
+import androidx.databinding.ViewDataBinding;
+import androidx.annotation.CallSuper;
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import android.util.SparseIntArray;
 import android.view.ViewGroup;
 import android.view.animation.Interpolator;

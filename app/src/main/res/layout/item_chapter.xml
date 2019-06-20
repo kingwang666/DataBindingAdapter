@@ -6,7 +6,6 @@
         <variable
             name="chapter"
             type="com.example.jiudeng009.databindingadapter.model.Chapter"/>
-        <import type="java.lang.String"/>
     </data>
 
     <FrameLayout
@@ -14,7 +13,7 @@
         android:layout_height="48dp"
         android:background="@drawable/clickable_transparent_selector">
 
-        <android.support.v7.widget.AppCompatTextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/name_tv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
